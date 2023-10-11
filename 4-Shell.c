@@ -45,5 +45,6 @@ int main(void)
 		/*** Handle non-built-in commands ***/
 		/*** ... ***/
 	}
+	return (0);
 
 }
