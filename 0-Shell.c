@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
 
 /**
  * main - our code
  * Return: 0 or void
  */
-
 int main(void)
 {
 	char *args[] = {"/bin/ls", NULL};
@@ -15,10 +16,11 @@ int main(void)
 	{
 		while (1)
 		{
-			printf("$");
+			printf("$ ");
 			char command[100];
 
-			fgets(command, sizeof(command), stdin);
+			if (fgets(command, sizeof(command), stdin) == NULL)
+				break;
 
 			command[strcspn(command, "\n")] = '\0';
 
@@ -36,6 +38,7 @@ int main(void)
 			else if (pid < 0)
 			{
 				perror("fork");
+				exit(EXIT_FAILURE);
 			}
 			else
 			{
@@ -47,13 +50,14 @@ int main(void)
 	{
 		char command[100];
 
-		fgets(command, sizeof(command), stdin);
+		if (fgets(command, sizeof(command), stdin) != NULL)
+		{
+			command[strcspn(command, "\n")] = '\0';
 
-		command[strcspn(command, "\n")] = '\0';
-
-		execve(args[0], args, NULL);
-		perror("execve");
-		exit(EXIT_FAILURE);
+			execve(args[0], args, NULL);
+			perror("execve");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	return (0);
